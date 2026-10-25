@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <title>Pesquisa anônima — Atos Jovem</title>
+  <style>
+    :root{
+      --red:#ed3024; --ink:#111111; --paper:#f5f0e8; --muted:#746d65; --line:#ded7cd;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--ink);color:var(--ink);min-height:100vh}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;background:
+      radial-gradient(circle at 10% 5%,rgba(237,48,36,.26),transparent 22rem),
+      radial-gradient(circle at 95% 85%,rgba(237,48,36,.12),transparent 28rem)}
+    .shell{width:min(100% - 18px,680px);min-height:100vh;margin:auto;padding:9px 0;display:grid;place-items:center}
+    .card{width:100%;background:var(--paper);border-radius:24px;padding:clamp(24px,5vw,46px);
+      position:relative;overflow:hidden;box-shadow:0 24px 90px rgba(0,0,0,.3)}
+    .card:after{content:"";position:absolute;right:-34px;top:-42px;width:118px;height:118px;background:var(--red);
+      border-radius:0 0 0 100%}
+    .eyebrow{font-size:12px;letter-spacing:.2em;font-weight:900;color:var(--red);margin-bottom:24px}
+    h1{font-size:clamp(38px,9vw,64px);line-height:.94;letter-spacing:-.055em;margin:0 0 20px;max-width:10ch}
+    .lead{font-size:clamp(18px,4vw,23px);line-height:1.35;margin:0 0 22px}
+    .privacy{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;margin:20px 0}
+    .privacy strong{display:block;margin-bottom:6px}
+    .muted{color:var(--muted);line-height:1.5}
+    .btn{appearance:none;border:0;border-radius:14px;min-height:56px;padding:0 22px;font:inherit;font-weight:900;
+      cursor:pointer;background:var(--red);color:white}
+    .btn.secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    .btn:disabled{opacity:.55}
+    .hidden{display:none!important}
+    .topline{display:flex;gap:14px;align-items:center;margin-bottom:28px;color:var(--muted);font-size:13px;font-weight:800}
+    .progress{height:7px;flex:1;background:#e5ddd3;border-radius:999px;overflow:hidden}
+    .progress i{display:block;width:25%;height:100%;background:var(--red);transition:width .2s ease}
+    fieldset{border:0;padding:0;margin:0}
+    legend{font-size:clamp(25px,6vw,38px);font-weight:900;line-height:1.08;letter-spacing:-.04em;margin-bottom:23px}
+    .option{display:block;margin:10px 0;cursor:pointer}
+    .option input{position:absolute;opacity:0}
+    .option span{display:flex;align-items:center;min-height:58px;padding:12px 16px;border:1.5px solid var(--line);
+      border-radius:14px;font-weight:800;background:rgba(255,255,255,.58)}
+    .option input:checked+span{border-color:var(--red);box-shadow:0 0 0 2px var(--red);background:white}
+    .actions{display:flex;gap:10px;margin-top:26px}
+    .actions .secondary{margin-right:auto}
+    .error{background:#ffe2de;color:#842318;border-radius:12px;padding:12px 14px;margin-top:14px;line-height:1.4}
+    .success{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:var(--red);color:white;
+      font-size:32px;font-weight:1000;margin-bottom:26px}
+    .micro{font-size:12px;margin-top:20px;color:var(--muted)}
+    @media(max-width:480px){.card{padding:25px 20px}.actions{flex-wrap:wrap}.actions button{flex:1}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section id="intro" class="card">
+      <div class="eyebrow">ATOS JOVEM</div>
+      <h1>Pesquisa anônima</h1>
+      <p class="lead">Queremos entender melhor como o tema das drogas aparece na realidade de quem caminha conosco.</p>
+      <div class="privacy">
+        <strong>Sem nome. Sem e-mail. Sem identificação.</strong>
+        <div class="muted">As respostas serão usadas apenas de forma agregada para orientar conversa, cuidado e pastoreio.</div>
+      </div>
+      <p class="muted">Nesta pesquisa, quando falamos em drogas, estamos nos referindo a drogas ilícitas.</p>
+      <button id="start" class="btn">Responder agora</button>
+      <div class="micro">Leva menos de 1 minuto.</div>
+    </section>
+
+    <section id="survey" class="card hidden">
+      <div class="topline"><span id="stepLabel">1 de 4</span><div class="progress"><i id="bar"></i></div></div>
+      <form id="form">
+        <fieldset data-step="0">
+          <legend>Você já se sentiu tentado ou pressionado a experimentar ou usar drogas?</legend>
+          <label class="option"><input type="radio" name="temptation" value="Nunca"><span>Nunca</span></label>
+          <label class="option"><input type="radio" name="temptation" value="Raramente"><span>Raramente</span></label>
+          <label class="option"><input type="radio" name="temptation" value="Algumas vezes"><span>Algumas vezes</span></label>
+          <label class="option"><input type="radio" name="temptation" value="Frequentemente"><span>Frequentemente</span></label>
+          <label class="option"><input type="radio" name="temptation" value="Prefiro não responder"><span>Prefiro não responder</span></label>
+        </fieldset>
+
+        <fieldset data-step="1" class="hidden">
+          <legend>Você tem algum amigo próximo envolvido com drogas?</legend>
+          <label class="option"><input type="radio" name="friend_involved" value="Sim"><span>Sim</span></label>
+          <label class="option"><input type="radio" name="friend_involved" value="Não"><span>Não</span></label>
+          <label class="option"><input type="radio" name="friend_involved" value="Não sei"><span>Não sei</span></label>
+          <label class="option"><input type="radio" name="friend_involved" value="Prefiro não responder"><span>Prefiro não responder</span></label>
+        </fieldset>
+
+        <fieldset data-step="2" class="hidden">
+          <legend>Existe ou já existiu na sua família alguém com problemas relacionados ao uso de drogas?</legend>
+          <label class="option"><input type="radio" name="family_case" value="Sim, atualmente"><span>Sim, atualmente</span></label>
+          <label class="option"><input type="radio" name="family_case" value="Já aconteceu no passado"><span>Já aconteceu no passado</span></label>
+          <label class="option"><input type="radio" name="family_case" value="Não"><span>Não</span></label>
+          <label class="option"><input type="radio" name="family_case" value="Prefiro não responder"><span>Prefiro não responder</span></label>
+        </fieldset>
+
+        <fieldset data-step="3" class="hidden">
+          <legend>Se você ou alguém próximo estivesse enfrentando esse problema, saberia com quem conversar ou onde buscar ajuda?</legend>
+          <label class="option"><input type="radio" name="knows_where_to_get_help" value="Sim"><span>Sim</span></label>
+          <label class="option"><input type="radio" name="knows_where_to_get_help" value="Talvez"><span>Talvez</span></label>
+          <label class="option"><input type="radio" name="knows_where_to_get_help" value="Não"><span>Não</span></label>
+          <label class="option"><input type="radio" name="knows_where_to_get_help" value="Prefiro não responder"><span>Prefiro não responder</span></label>
+        </fieldset>
+
+        <div class="actions">
+          <button type="button" id="back" class="btn secondary hidden">Voltar</button>
+          <button type="button" id="next" class="btn">Continuar</button>
+          <button type="submit" id="send" class="btn hidden">Enviar anonimamente</button>
+        </div>
+        <div id="error" class="error hidden"></div>
+      </form>
+    </section>
+
+    <section id="done" class="card hidden">
+      <div class="success">✓</div>
+      <h1>Obrigado.</h1>
+      <p class="lead">Sua resposta foi registrada de forma anônima.</p>
+      <p class="muted">Se esse assunto toca sua vida de perto e você quiser conversar, procure uma liderança em quem confia. Você não precisa atravessar isso sozinho.</p>
+    </section>
+  </main>
+
+<script>
+const API="https://sbzgbophgrjwkijsnnhd.supabase.co/functions/v1/responder";
+const intro=document.querySelector("#intro"),survey=document.querySelector("#survey"),done=document.querySelector("#done");
+const form=document.querySelector("#form"),sets=[...document.querySelectorAll("fieldset[data-step]")];
+const stepLabel=document.querySelector("#stepLabel"),bar=document.querySelector("#bar"),back=document.querySelector("#back"),
+next=document.querySelector("#next"),send=document.querySelector("#send"),error=document.querySelector("#error");
+let step=0;
+
+function render(){
+  sets.forEach((el,i)=>el.classList.toggle("hidden",i!==step));
+  stepLabel.textContent=(step+1)+" de "+sets.length;
+  bar.style.width=((step+1)/sets.length*100)+"%";
+  back.classList.toggle("hidden",step===0);
+  next.classList.toggle("hidden",step===sets.length-1);
+  send.classList.toggle("hidden",step!==sets.length-1);
+  error.classList.add("hidden");
+}
+function selected(){return sets[step].querySelector("input:checked")}
+document.querySelector("#start").onclick=()=>{intro.classList.add("hidden");survey.classList.remove("hidden");render()}
+next.onclick=()=>{if(!selected()){error.textContent="Escolha uma opção para continuar.";error.classList.remove("hidden");return}step++;render()}
+back.onclick=()=>{step=Math.max(0,step-1);render()}
+
+form.onsubmit=async(e)=>{
+  e.preventDefault();
+  if(!selected()) return;
+  send.disabled=true; send.textContent="Enviando…";
+  const fd=new FormData(form);
+  const payload=Object.fromEntries(fd.entries());
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    if(!r.ok) throw new Error();
+    survey.classList.add("hidden"); done.classList.remove("hidden");
+  }catch(_){
+    error.textContent="Não conseguimos registrar agora. Tente novamente.";
+    error.classList.remove("hidden"); send.disabled=false; send.textContent="Enviar anonimamente";
+  }
+}
+</script>
+</body>
+</html>
