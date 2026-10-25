@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>Resultados — Atos Jovem</title>
+<style>
+:root{--red:#ed3024;--ink:#111;--paper:#f5f0e8;--muted:#716a62;--line:#ded6cc;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:#eee8df;color:var(--ink)}
+.shell{width:min(1180px,100% - 20px);margin:auto;padding:28px 0 60px}
+.eyebrow{font-size:12px;letter-spacing:.2em;font-weight:900;color:var(--red);margin-bottom:16px}
+h1{font-size:clamp(42px,8vw,74px);letter-spacing:-.055em;line-height:.95;margin:0 0 20px}
+.login{width:min(100%,520px);margin:10vh auto;background:var(--paper);padding:28px;border-radius:24px;box-shadow:0 22px 60px #0002}
+.login p{color:var(--muted);line-height:1.5}.field{display:grid;gap:7px;margin:18px 0}
+.field input{font:inherit;padding:14px;border:1px solid var(--line);border-radius:12px;background:white}
+.btn{border:0;border-radius:13px;padding:15px 20px;background:var(--red);color:#fff;font:inherit;font-weight:900}
+.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 28px}
+.stat{background:#111;color:#fff;border-radius:18px;padding:20px}.stat b{display:block;font-size:40px;letter-spacing:-.05em}
+.stat span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#c8c0b6}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.panel{background:var(--paper);border-radius:20px;padding:22px}
+.panel h2{font-size:20px;margin:0 0 18px}.row{margin:13px 0}.meta{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:800;margin-bottom:6px}
+.bar{height:11px;background:#dfd7cc;border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;background:var(--red);border-radius:999px}
+.error{margin-top:14px;color:#8a251b}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-end}
+.refresh{background:#111}.note{color:var(--muted);font-size:13px}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<section id="login" class="login">
+<div class="eyebrow">ATOS JOVEM · LIDERANÇA</div>
+<h1>Resultados</h1>
+<p>Digite a chave privada da liderança para acessar os percentuais da pesquisa.</p>
+<label class="field">Chave de acesso<input id="code" type="password" autocomplete="off"></label>
+<button id="enter" class="btn">Abrir painel</button>
+<div id="loginError" class="error hidden">Chave inválida.</div>
+</section>
+<main id="dashboard" class="shell hidden">
+<div class="top"><div><div class="eyebrow">ATOS JOVEM · PESQUISA ANÔNIMA</div><h1>Resultados</h1></div><button id="refresh" class="btn refresh">Atualizar</button></div>
+<p class="note">Dados agregados. Nenhuma resposta individual é exibida.</p>
+<div class="stats">
+<div class="stat"><b id="total">0</b><span>Respostas</span></div>
+<div class="stat"><b id="tempted">0%</b><span>Tentação/pressão</span></div>
+<div class="stat"><b id="friends">0%</b><span>Amigo envolvido</span></div>
+<div class="stat"><b id="family">0%</b><span>Caso na família</span></div>
+</div>
+<div id="grid" class="grid"></div>
+</main>
+<script>
+const API="https://sbzgbophgrjwkijsnnhd.supabase.co/functions/v1/resultados";
+const labels={temptation:"Tentação ou pressão para experimentar/usar drogas",friend_involved:"Amigo próximo envolvido com drogas",family_case:"Caso relacionado ao uso de drogas na família",knows_where_to_get_help:"Saberia com quem conversar ou onde buscar ajuda"};
+let code="";
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function panel(title,rows){return '<section class="panel"><h2>'+esc(title)+'</h2>'+(rows.length?rows.map(r=>'<div class="row"><div class="meta"><span>'+esc(r.label)+'</span><span>'+r.count+' · '+r.percentage+'%</span></div><div class="bar"><i style="width:'+r.percentage+'%"></i></div></div>').join(""):'<p>Ainda sem respostas.</p>')+'</section>'}
+async function load(){const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code})});if(!r.ok)throw new Error();const data=await r.json(),s=data.summary;document.querySelector("#total").textContent=s.total;document.querySelector("#tempted").textContent=s.tempted_percentage+"%";document.querySelector("#friends").textContent=s.friend_percentage+"%";document.querySelector("#family").textContent=s.family_percentage+"%";document.querySelector("#grid").innerHTML=Object.entries(s.questions).map(([k,v])=>panel(labels[k],v)).join("")}
+document.querySelector("#enter").onclick=async()=>{code=document.querySelector("#code").value.trim();try{await load();document.querySelector("#login").classList.add("hidden");document.querySelector("#dashboard").classList.remove("hidden")}catch(_){document.querySelector("#loginError").classList.remove("hidden")}}
+document.querySelector("#refresh").onclick=()=>load().catch(()=>alert("Não foi possível atualizar."));
+</script>
+</body>
+</html>
